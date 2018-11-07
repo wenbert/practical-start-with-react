@@ -423,4 +423,178 @@ import FeaturedHouse from './featured-house';
 
 
 ### Binding Component Props
-TO BE CONTINUED....
+Let's create a country filter. 
+Tutorial goes around by filtering all countries in the JSON file. But I decided to just write them explicitly.
+
+Add this in `main-page/index.js`
+```js
+  determineUniqueCountries = () => {
+    // const countries = this.allHouses
+    //   ? Array.from(new Set(this.allHouses.map(h => h.country)))
+    //   : [];
+    // countries.unshift(null);
+    const countries = [
+      '',
+      'Switzerland',
+      'The Netherlands'
+    ];
+    this.setState({ countries });
+  }
+```
+
+The inside `fetchHouse()`, call it:
+```js
+// ...
+this.determineFeaturedHouse();
+this.determineUniqueCountries();
+// ...
+```
+
+Next is to create a HouseFilter.
+
+Create file `main-page/house-filter.js` with the following contents:
+```js
+import React, { Component } from 'react';
+
+class HouseFilter extends Component {
+    state = {};
+
+    onSearchChange = (e) => {
+        const country = e.target.value;
+    }
+
+    render() { 
+        const search = this.state.search;
+        const countries = this.props.countries || [];
+
+        return (
+            <div>
+                Look for you dream house in country: 
+                <select value={search} onChange={this.onSearchChange}>
+                    {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+            </div>
+        );
+    }
+}
+ 
+export default HouseFilter;
+```
+
+Then in `main-page/index.js` use it:
+```js
+import HouseFilter from './house-filter';
+// ...
+
+  render() {
+    return (
+      <div className="container">
+        <Header subtitle="Providing houses all over the world. From a prop."/>
+        // Use here!!!
+        <HouseFilter countries={this.state.countries}/>
+        <FeaturedHouse house={this.state.featuredHouse}/>
+      </div>
+    );
+  }
+// ...
+```
+
+#### Passing Functions to Child Components
+
+##### Functions as Props
+
+Take for example we have this:
+```js
+filter = (country) => {
+    // ...
+}
+
+render() {
+    <HouseFilter filterHouses={this.filter} />
+}
+```
+
+In the root component, we receive the function:
+```js
+onSearchChange = (arg) => {
+    this.props.filterHouses(country);
+}
+```
+
+The `arg` above is basically a function.
+
+The `filterHouses()`  method looks like:
+```js
+filterHouses = (country) => {
+    const filteredHouses = this.allHouses.filter((h) => h.country === country);
+    this.setState({ filteredHouses });
+    this.setState({ country });
+}
+```
+
+Then in the `render()` method, I just add it to the `HouseFilter` as a second parameter. Like this:
+```js
+render() {
+return (
+    <div className="container">
+    <Header subtitle="Providing houses all over the world. From a prop."/>
+    <HouseFilter countries={this.state.countries} filterHouses={this.filterHouses}/>
+    <FeaturedHouse house={this.state.featuredHouse}/>
+    </div>
+);
+}
+```
+
+Then update `main-page/house-filter.js`:
+```js
+onSearchChange = (e) => {
+    const country = e.target.value;
+    this.props.filterHouses(country);
+}
+```
+
+#### Varying Render Output with Component Variables
+Read the title again. That says it all.
+
+It is basically hiding / showing components in the `render()` depending on variable states.
+
+#### Form Controls
+This section shows you how to do form controls. It deals with value and event binding.
+Unlike VueJS where you use `v-bind`, in React you have to this by "hand". See for more info: https://reactjs.org/docs/forms.html
+
+For example see `value={this.state.value} onChange={this.handleChange}` below:
+```js
+class NameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+
+## Augmenting Features and Tooling
+To be continued...
