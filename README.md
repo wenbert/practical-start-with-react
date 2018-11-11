@@ -597,4 +597,104 @@ class NameForm extends React.Component {
 ```
 
 ## Augmenting Features and Tooling
-To be continued...
+
+* Separating state and UI
+* Type checking
+* Routing
+* Context
+* Flux and Redux
+* Ejecting
+* Unit Testing with Jest
+* Progressive React apps
+
+
+### Separating state and UI
+
+In this part, the tutorial author created a separate file called `main-page/app-presentation.js`. 
+Instead of using `state`, everything is passed inside a `prop`. 
+
+For example:
+
+```js
+const AppPresentation = (props) => {
+    let activeComponent = null;
+    if (props.country) 
+        activeComponent = <SearchResults country={props.country} filteredHouse={props.filterHouses} />;
+    if (props.activeHouse)
+        activeComponent = <HouseDetail house={props.activeHouse} />;
+    if (!activeComponent)
+        activeComponent = <FeaturedHouse house={props.featuredHouse} />
+
+    return (
+        <div className="container">
+            <Header />
+            <HouseFilter countries={props.countries} filterHouses={props.filterHouses} />
+            {activeComponent}
+        </div>
+    )
+}
+```
+
+In the render method of the original component, it would look like this:
+```js
+render() {
+    return (
+        <AppPresentation country={this.state.country}
+            filteredHouses={this.state.filteredHouses}
+            featuredHouse={this.state.featuredHouse}
+            countries={this.state.countries} filterHouses={this.filterHouses}
+            activeHouse={this.state.activeHouse} setActiveHouse={this.setActiveHouse} />
+    )
+}
+```
+
+So the `AppPresentation` presentation acts as a "intermediarry".
+
+#### Type Checking
+Install:
+```
+npm install --save prop-types
+```
+
+Then in the `house/index.js` (House Component), type `impt` and select "Import PropTypes".
+
+```js
+// ...
+import PropTypes from 'prop-types';
+
+class house extends Component {
+    state = {};
+    render() { 
+        // ...
+    }
+}
+
+
+HouseFilter.PropTypes = {house: PropTypes.object.isRequired}
+export default house;
+```
+
+#### Routing
+
+React Router
+  
+```
+npm install --save react-router-dom
+```
+
+#### Context
+
+Components can have children and grand children. What if you want to pass information that is considered global across components?
+
+For example, what if we want to pass "Language"? ie: What language will all components use?
+
+#### Flux and Redux
+* Flux: Architectural pattern
+* Redux is an implementation
+* You don't need it until you need it
+* For complex applications
+* New concept around state and UI updates
+
+
+#### Ejecting
+TO be continued...
